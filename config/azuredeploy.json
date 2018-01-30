@@ -30,11 +30,11 @@
   },
   "variables": {
     "computeResouresApiVersion": "2016-04-30-preview",
-    "dataDisk1Name": "[concat(uniquestring(parameters('vmName')), 'datadisk1')]",
+    "dataDisk": "[concat(uniquestring(parameters('vmName')), 'data')]",
     "imagePublisher": "RedHat",
     "imageOffer": "RHEL",
     "imageSku": "7.2",
-    "OSDiskName": "[concat(uniquestring(parameters('vmName')), 'osdisk')]",
+    "OSDiskName": "[concat(uniquestring(parameters('vmName')), 'os')]",
     "nicName": "[concat(uniquestring(parameters('vmName')), 'nic')]",
     "addressPrefix": "10.0.0.0/16",
     "subnetName": "Subnet",
@@ -57,97 +57,150 @@
         "publicIPAllocationMethod": "[variables('publicIPAddressType')]"
       }
     },
-    {
-      "apiVersion": "2015-06-15",
-      "type": "Microsoft.Network/virtualNetworks",
-      "name": "[variables('virtualNetworkName')]",
-      "location": "[resourceGroup().location]",
-      "properties": {
-        "addressSpace": {
-          "addressPrefixes": [
-            "[variables('addressPrefix')]"
-          ]
-        },
-        "subnets": [
-          {
-            "name": "[variables('subnetName')]",
-            "properties": {
-              "addressPrefix": "[variables('subnetPrefix')]"
-            }
-          }
-        ]
-      }
-    },
-    {
-      "apiVersion": "2015-06-15",
-      "type": "Microsoft.Network/networkInterfaces",
-      "name": "[variables('nicName')]",
-      "location": "[resourceGroup().location]",
-      "dependsOn": [
-        "[concat('Microsoft.Network/publicIPAddresses/', variables('publicIPAddressName'))]",
-        "[concat('Microsoft.Network/virtualNetworks/', variables('virtualNetworkName'))]"
-      ],
-      "properties": {
-        "ipConfigurations": [
-          {
-            "name": "ipconfig1",
-            "properties": {
-              "privateIPAllocationMethod": "Dynamic",
-              "publicIPAddress": {
-                "id": "[resourceId('Microsoft.Network/publicIPAddresses',variables('publicIPAddressName'))]"
+        {
+          "apiVersion": "2017-03-01",
+          "type": "Microsoft.Network/networkSecurityGroups",
+          "name": "[parameters('frontEndNSGName')]",
+          "location": "[resourceGroup().location]",
+          "tags": {
+            "displayName": "NSG - Front End"
+          },
+          "properties": {
+            "securityRules": [
+              {
+                "name": "ssh",
+                "properties": {
+                  "description": "Allow SSH",
+                  "protocol": "Tcp",
+                  "sourcePortRange": "*",
+                  "destinationPortRange": "22",
+                  "sourceAddressPrefix": "*",
+                  "destinationAddressPrefix": "*",
+                  "access": "Allow",
+                  "priority": 100,
+                  "direction": "Inbound"
+                }
               },
-              "subnet": {
-                "id": "[variables('subnetRef')]"
+              {
+                "name": "http-elastic",
+                "properties": {
+                  "description": "Allow Elastic",
+                  "protocol": "Tcp",
+                  "sourcePortRange": "*",
+                  "destinationPortRange": "9200",
+                  "sourceAddressPrefix": "*",
+                  "destinationAddressPrefix": "*",
+                  "access": "Allow",
+                  "priority": 200,
+                  "direction": "Inbound"
+                }
+              }
+            ],
+          "subnets": [
+            {
+              "name": "[variables('subnetName')]",
+              "properties": {
+                "addressPrefix": "[variables('subnetPrefix')]",
+                "networkSecurityGroup": {
+                  "id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('subnetName'))]"
+                }
               }
             }
+          ]
           }
-        ]
-      }
-    },
-    {
-      "apiVersion": "2016-04-30-preview",
-      "type": "Microsoft.Compute/virtualMachines",
-      "name": "[parameters('vmName')]",
-      "location": "[resourceGroup().location]",
-      "tags": {
-        "Tag1": "ManagedVM"
-      },
-      "dependsOn": [
-        "[concat('Microsoft.Network/networkInterfaces/', variables('nicName'))]"
-      ],
-      "properties": {
-        "hardwareProfile": {
-          "vmSize": "[variables('vmSize')]"
         },
-        "osProfile": {
-          "computerName": "[parameters('vmName')]",
-          "adminUsername": "[parameters('adminUsername')]",
-          "adminPassword": "[parameters('adminPassword')]"
+        {
+          "apiVersion": "2015-06-15",
+          "type": "Microsoft.Network/virtualNetworks",
+          "name": "[variables('virtualNetworkName')]",
+          "location": "[resourceGroup().location]",
+          "properties": {
+            "addressSpace": {
+              "addressPrefixes": [
+                "[variables('addressPrefix')]"
+              ]
+            },
+            "subnets": [
+              {
+                "name": "[variables('subnetName')]",
+                "properties": {
+                  "addressPrefix": "[variables('subnetPrefix')]"
+                }
+              }
+            ]
+          }
         },
-        "storageProfile": {
-          "imageReference": {
-            "publisher": "[variables('imagePublisher')]",
-            "offer": "[variables('imageOffer')]",
-            "sku": "[variables('imageSku')]",
-            "version": "latest"
+        {
+          "apiVersion": "2015-06-15",
+          "type": "Microsoft.Network/networkInterfaces",
+          "name": "[variables('nicName')]",
+          "location": "[resourceGroup().location]",
+          "dependsOn": [
+            "[concat('Microsoft.Network/publicIPAddresses/', variables('publicIPAddressName'))]",
+            "[concat('Microsoft.Network/virtualNetworks/', variables('virtualNetworkName'))]"
+          ],
+          "properties": {
+            "ipConfigurations": [
+              {
+                "name": "ipconfig1",
+                "properties": {
+                  "privateIPAllocationMethod": "Dynamic",
+                  "publicIPAddress": {
+                    "id": "[resourceId('Microsoft.Network/publicIPAddresses',variables('publicIPAddressName'))]"
+                  },
+                  "subnet": {
+                    "id": "[variables('subnetRef')]"
+                  }
+                }
+              }
+            ]
+          }
+        },
+        {
+          "apiVersion": "2016-04-30-preview",
+          "type": "Microsoft.Compute/virtualMachines",
+          "name": "[parameters('vmName')]",
+          "location": "[resourceGroup().location]",
+          "tags": {
+            "Tag1": "ManagedVM"
           },
-          "dataDisks": [
-            {
-              "name": "[variables('dataDisk1Name')]",
-              "diskSizeGB": "100",
-              "lun": 0,
-              "createOption": "Empty"
+          "dependsOn": [
+            "[concat('Microsoft.Network/networkInterfaces/', variables('nicName'))]"
+          ],
+          "properties": {
+            "hardwareProfile": {
+              "vmSize": "[variables('vmSize')]"
+            },
+            "osProfile": {
+              "computerName": "[parameters('vmName')]",
+              "adminUsername": "[parameters('adminUsername')]",
+              "adminPassword": "[parameters('adminPassword')]"
+            },
+            "storageProfile": {
+              "imageReference": {
+                "publisher": "[variables('imagePublisher')]",
+                "offer": "[variables('imageOffer')]",
+                "sku": "[variables('imageSku')]",
+                "version": "latest"
+              },
+              "dataDisks": [
+                {
+                  "name": "[variables('dataDisk')]",
+                  "diskSizeGB": "100",
+                  "lun": 0,
+                  "createOption": "Empty"
+                }
+              ]
+            },
+            "networkProfile": {
+              "networkInterfaces": [
+                {
+                  "id": "[resourceId('Microsoft.Network/networkInterfaces',variables('nicName'))]"
+                }
+              ]
             }
-          ]
-        },
-        "networkProfile": {
-          "networkInterfaces": [
-            {
-              "id": "[resourceId('Microsoft.Network/networkInterfaces',variables('nicName'))]"
-            }
-          ]
+          }
         }
-      }
+      ]
     }
-  ]
 }

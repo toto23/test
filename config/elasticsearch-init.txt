@@ -1,0 +1,20 @@
+#cloud-config
+
+packages:
+ - elasticsearch
+
+mounts:
+ - [ ephemeral0, /mnt, auto, "defaults,noexec" ]
+ - [ sdc, /opt/data ]
+ - [ xvdh, /opt/data, "auto", "defaults,nofail", "0", "0" ]
+ - [ dd, /dev/zero ]
+
+runcmd:
+ - mkdir -p /data/logs
+ - mkdir -p /data/node
+ - systemctl stop firewalld
+ - systemctl disable firewalld
+ - systemctl start elasticsearch
+ - systemctl enable elasticsearch
+
+final_message: "The system is finally up, after $UPTIME seconds"
