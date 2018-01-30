@@ -42,8 +42,8 @@ class Deployer(object):
         # param_file.close()
 
         params = {
-            'adminUsername': 'esadmin',
-            'adminPassword': 'Es@dmin12345',
+            'adminUsername': '',
+            'adminPassword': '',
             'vmName': 'elastic'
         }
         params = {k: {'value': v} for k, v in params.items()}

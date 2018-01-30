@@ -2,38 +2,6 @@ import os.path
 import sys
 from deployer import Deployer
 
-# {
-#     "cloudName": "AzureCloud",
-#     "id": "4e47036e-f8d5-43a7-8fa8-ca7d32a44fab",
-#     "isDefault": true,
-#     "name": "Azure Free Trial",
-#     "state": "Enabled",
-#     "tenantId": "d598d3d6-a9ea-42cb-8441-a73d7ef1006b",
-#     "user": {
-#         "name": "antoine.legall@guillaumemorelinvivoo.onmicrosoft.com",
-#         "type": "user"
-#     }
-# }
-
-# os.environ['AZURE_TENANT_ID'] = "d598d3d6-a9ea-42cb-8441-a73d7ef1006b" # with your Azure Active Directory tenant id or domain
-# os.environ['AZURE_SUBSCRIPTION_ID'] = "4e47036e-f8d5-43a7-8fa8-ca7d32a44fab" # with your Azure Active Directory Application Secret
-# os.environ['AZURE_CLIENT_ID'] = "antoine.legall@guillaumemorelinvivoo.onmicrosoft.com" # with your Azure Active Directory Application Client ID
-# # os.environ['AZURE_CLIENT_ID'] = "6724ac8f-2d97-463e-9f58-c6915afc29a2" # with your Azure Active Directory Application Client ID
-# # os.environ['AZURE_CLIENT_SECRET'] = "Norm@nd567" # with your Azure Active Directory Application Secret
-# os.environ['AZURE_CLIENT_SECRET'] = "Norm@nd567" # with your Azure Active Directory Application Secret
-
-# my_subscription_id = os.environ.get('AZURE_SUBSCRIPTION_ID', '11111111-1111-1111-1111-111111111111')   # your Azure Subscription Id
-
-# my_pub_ssh_key_path = os.path.expanduser('~/.ssh/id_rsa.pub')   # the path to your rsa public key file
-
-# msg = "\nInitializing the Deployer class with subscription id: {}, resource group: {}" \
-#     "\nand public key located at: {}...\n\n"
-# msg = msg.format(my_subscription_id, my_resource_group, my_pub_ssh_key_path)
-# print(msg)
-
-# print("Deployment set with "+my_subscription_id+" and "+my_resource_group)
-
-# sys.exit(0)
 
 # Standard_A0,Standard_A1,Standard_A2,Standard_A3,Standard_A5,Standard_A4,Standard_A6,Standard_A7,Basic_A0,Basic_A1,Basic_A2,Basic_A3,Basic_A4,Standard_D1
 # Standard_D2,Standard_D3,Standard_D4,Standard_D11,Standard_D12,Standard_D13,Standard_D14,Standard_A1_v2,Standard_A2m_v2,Standard_A2_v2,Standard_A4m_v2,Standard_A4_v2
@@ -52,10 +20,10 @@ from deployer import Deployer
 # Standard_M128s,Standard_ND6s,Standard_ND12s,Standard_ND24rs,Standard_ND24s,Standard_E32-8s_v3,Standard_E32-16s_v3,Standard_E64-16s_v3,Standard_E64-32s_v3,Standard_NC6s_v2
 # Standard_NC12s_v2,Standard_NC24rs_v2,Standard_NC24s_v2,Standard_A8,Standard_A9,Standard_A10,Standard_A11
 
-user="antoine.legall@guillaumemorelinvivoo.onmicrosoft.com"
-passwd="Norm@nd567"
-my_subscription_id="4e47036e-f8d5-43a7-8fa8-ca7d32a44fab"
-my_resource_group = 'Invivoo-elastic'
+user=""
+passwd=""
+my_subscription_id=""
+my_resource_group = ''
 
 # Initialize the deployer class
 # deployer = Deployer(my_subscription_id, my_resource_group, my_pub_ssh_key_path)

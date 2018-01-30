@@ -5,8 +5,8 @@ from azure.mgmt.storage import StorageManagementClient
 from azure.storage import CloudStorageAccount
 from azure.storage.blob.models import ContentSettings, PublicAccess
 
-credentials = UserPassCredentials('antoine.legall@guillaumemorelinvivoo.onmicrosoft.com', 'Norm@nd567')
-subscription_id = '4e47036e-f8d5-43a7-8fa8-ca7d32a44fab'
+credentials = UserPassCredentials('', '')
+subscription_id = ''
 
 resource_client = ResourceManagementClient(credentials, subscription_id)
 storage_client = StorageManagementClient(credentials, subscription_id)
